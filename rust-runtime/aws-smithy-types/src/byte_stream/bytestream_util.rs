@@ -205,22 +205,23 @@ impl FsBuilder {
 
         if let Some(path) = self.path {
             let body_loader = move || {
+                // JCT: disable 1-x path to test possible regression.
                 // If an offset was provided, seeking will be handled in `PathBody::poll_data` each
                 // time the file is loaded.
-                #[cfg(not(feature = "http-body-1-x"))]
+                // #[cfg(not(feature = "http-body-1-x"))]
                 return SdkBody::from_body_0_4_internal(PathBody::from_path(
                     path.clone(),
                     length,
                     buffer_size,
                     self.offset,
                 ));
-                #[cfg(feature = "http-body-1-x")]
-                return SdkBody::from_body_1_x_internal(PathBody::from_path(
-                    path.clone(),
-                    length,
-                    buffer_size,
-                    self.offset,
-                ));
+                // #[cfg(feature = "http-body-1-x")]
+                // return SdkBody::from_body_1_x_internal(PathBody::from_path(
+                //    path.clone(),
+                //    length,
+                //    buffer_size,
+                //    self.offset,
+                // ));
             };
 
             Ok(ByteStream::new(SdkBody::retryable(body_loader)))
